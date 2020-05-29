@@ -31,7 +31,7 @@ poly(p_4).
 
 poly(c_7).                poly(z_1).                                
 poly(c_8).                poly(z_2).               
-poly(c_9).                
+poly(c_9).  
 
 joins(c_1,c_2).           joins(c_4,c_5).       
 joins(c_1,c_3).           joins(c_5,c_4).      
@@ -122,9 +122,12 @@ allSides([H|T], Num):-
 
 %% metarules
 %metarule([P,Q], [P,A], [[Q,A,4]]).
-metarule([P,Q], [P,A], [[Q,A,_]]).
+%metarule([P,Q], [P,A], [[Q,A,_]]).
 %metarule([P,Q,R], [P,A], [[Q,A],[R,A,90]]).
-metarule([P,Q,R], [P,A], [[Q,A],[R,A,_]]).
+%metarule([P,Q,R], [P,A], [[Q,A],[R,A,_]]).
+%metarule([P,C1], [P,A,C1], []).
+metarule([P,Q,C1], [P,A], [[Q,A,C1]]).
+metarule([P,Q,R,C1], [P,A], [[Q,A],[R,A,C1]]).
 
 
 %% learning task
@@ -144,9 +147,9 @@ metarule([P,Q,R], [P,A], [[Q,A],[R,A,_]]).
     cube([t_1,t_2,t_3]),
     cube([t_2,t_1,t_3]),
     cube([c_7,c_8,c_9]),
-    cube([c_9,c_8,c_7])%,
-    %cube([z_1,z_2]),
-    %cube([z_2,z_1])
+    cube([c_9,c_8,c_7]),
+    cube([z_1,z_2]),
+    cube([z_2,z_1])
   ],
   learn(Pos,Neg).
 
