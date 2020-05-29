@@ -14,4 +14,4 @@ The current code "cube.pl" uses 6 examples shapes, 2 positive and 4 negative to 
 
 The 6 shapes are shown in the drawings below, there are represented in the code in the same format (2x3).
 
-![6 3D shapes used as background knowledge for Cube3.pl](https://github.com/CompVis-LV/Thesis_Prolog/tree/master/shapes.png)
+![6 3D shapes used as background knowledge for Cube3.pl](https://github.com/CompVis-LV/Thesis_Prolog/tree/master/IMAGES/shapes.png)
