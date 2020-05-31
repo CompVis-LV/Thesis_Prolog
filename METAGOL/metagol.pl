@@ -10,7 +10,7 @@
     body_pred_call/2,
     compiled_pred_call/2.
 
-default(max_clauses(10)).
+default(max_clauses(5)).
 
 learn(Pos,Neg):-
     learn(Pos,Neg,Prog),
