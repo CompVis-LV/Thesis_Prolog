@@ -19,8 +19,8 @@ row_to_list(Row, List):-
   
 read_list([]).
 read_list([Head|Tail]) :-
-    read_list_head(Head),
-    read_list(Tail).
+  read_list_head(Head),
+  read_list(Tail).
 
 read_list_head(Word):-
     format("~w~n",[Word]).
@@ -28,6 +28,9 @@ read_list_head(Word):-
 read_list_head([Head|Tail]):-
     format("~w~n",[Head]),
     read_list_head(Tail).
+
+testfunction([[Top|_]|_]):-
+  format("~w~n",[Top]),nl,nl.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
     

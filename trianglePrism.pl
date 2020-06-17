@@ -64,10 +64,10 @@ angle_between(c_3,c_2, 90).
 
 angle_between(p_1,p_2, 90).    angle_between(t_1,t_2, 90).        
 angle_between(p_1,p_3, 90).    angle_between(t_1,t_3, 90).          
-angle_between(p_1,p_4, 90).    angle_between(t_2,t_3, 90).
+angle_between(p_1,p_4, 90).    angle_between(t_2,t_3, 60).
 angle_between(p_2,p_1, 90).    angle_between(t_2,t_1, 90).       
 angle_between(p_3,p_1, 90).    angle_between(t_3,t_1, 90).          
-angle_between(p_4,p_1, 90).    angle_between(t_3,t_2, 90).
+angle_between(p_4,p_1, 90).    angle_between(t_3,t_2, 60).
 angle_between(p_2,p_3, 60).
 angle_between(p_3,p_4, 60).
 angle_between(p_3,p_2, 60).
@@ -148,9 +148,8 @@ metarule([P,Q,R], [P,A], [[Q,A,B],[R,B]]).
 :-
   %% positive examples
   Pos = [    
-    cube([p_1,p_2,p_3,p_4]),
-    cube([p_2,p_1,p_4,p_3]),
-    cube([p_2,p_1,p_3])
+    cube([t_1,t_2,t_3]),
+    cube([t_2,t_1,t_3])
   ],
   %% negative examples
   Neg = [
@@ -159,8 +158,9 @@ metarule([P,Q,R], [P,A], [[Q,A,B],[R,B]]).
     cube([c_3,c_2,c_1]),
     cube([c_5,c_4]),
     cube([c_4,c_5]),
-    cube([t_1,t_2,t_3]),
-    cube([t_2,t_1,t_3]),
+    cube([p_1,p_2,p_3,p_4]),
+    cube([p_2,p_1,p_4,p_3]),
+    cube([p_2,p_1,p_3]),
     cube([c_7,c_8,c_9]),
     cube([c_9,c_8,c_7]),
     cube([z_1,z_2]),

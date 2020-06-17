@@ -1,20 +1,13 @@
-:- use_module('METAGOL/metagol').
+:- use_module('../METAGOL/metagol').
 
 %% metagol settings
-% body_pred(poly/1).
-% body_pred(joins/2).
-% body_pred(sides/2).
-% body_pred(allSides/2).
-% body_pred(angle_between/3).
-% body_pred(angle_to_ground/2).
-% body_pred(angle_between_aux/3).
-% body_pred(angle/2).
-% body_pred(ang_to_other/3).
-% body_pred(allSidesNot/2).
-% body_pred(remove_odd_size/2).
-body_pred(prism/1).
-body_pred(reorder_list/2).
-body_pred(primary_side/2).
+body_pred(poly/1).
+body_pred(joins/2).
+body_pred(sides/2).
+body_pred(allSides/2).
+body_pred(angle_between/3).
+body_pred(angle_between_aux/3).
+body_pred(angle/2).
 
 %% background knowledge
 poly(c_1).                poly(c_4).                   
@@ -28,7 +21,7 @@ poly(p_4).
 
 poly(c_7).                poly(z_1).                                
 poly(c_8).                poly(z_2).               
-poly(c_9).  
+poly(c_9).                
 
 joins(c_1,c_2).           joins(c_4,c_5).       
 joins(c_1,c_3).           joins(c_5,c_4).      
@@ -93,72 +86,47 @@ sides(p_4, 4).
 sides(c_7, 4).      sides(z_1, 3).    
 sides(c_8, 4).      sides(z_2, 3).
 sides(c_9, 4).
+
+
 %Background
 
 %% True if all faces are at 90 degrees to each other
-ang_to_other([First, Second|[]], Deg):-
-  angle_between(First, Second, Deg).
-ang_to_other([First, Second|Tail], Deg):-
-  angle_between(First, Second, Deg),
-  ang_to_other([First|Tail], Deg).
+%% This is not entirely a correct definition however it will be true for any possible images of a cube.
+angle([First|[]], Deg).
+angle([First|Tail], Deg):-
+  angle_between_aux(First, Tail, Deg),
+  angle(Tail, Deg).
 
-clone(X,X).
-my_length([],0).
-my_length([_|L],N) :- my_length(L,N1), N is N1 + 1.
+angle_between_aux(First, [Second|Tail], Deg):-
+    angle_between(First, Second, Deg).
 
 %% True if all faces of a shape have the same number of edges.
-allSides([], _).
+allSides([], Num).
 allSides([H|T], Num):-
   sides(H, Num),
   allSides(T, Num).
 
-%% Reorders a list with one face having different sides to the rest, brings different side to front
-reorder_list([H|T], Odds):-
-  my_length([H|T], L),
-  reorder_list_counted([H|T], L, Odds).
-  
-reorder_list_counted([Head|Tail], Count, Odds):-
-  Count \= 0,
-  CountDep is Count-1,
-  append(Tail, [Head], Rot),
-  ( sides(Head, D),
-  D \= 4,
-  allSides(Tail, 4)
-  -> clone([Head|Tail], Odds)
-  ; reorder_list_counted(Rot, CountDep, Odds)
-  ).
-
-prism([First|Other]) :-
-  ang_to_other([First|Other], 90),
-  allSides(Other, 4).
-
-primary_side([Face|_], Num):- sides(Face, Num).
 
 
 %% metarules
-% metarule([P,Q], [P,A], [[Q,A,6]]).
-% metarule([P,Q,R], [P,A], [[Q,A],[R,A,6]]).
-% metarule([P,C1], [P,A,C1], []).
-metarule([P,Q,R,C1], [P,A], [[Q,A],[R,A,C1]]).
-% metarule([P,Q,R,C1], [P,A], [[Q,A],[R,A,C1]]).
-metarule([P,Q,R], [P,A], [[Q,A,B],[R,B]]).
+metarule([P,Q], [P,A], [[Q,A,_]]).
+metarule([P,Q,R], [P,A], [[Q,A],[R,A,_]]).
 
 
 %% learning task
 :-
   %% positive examples
-  Pos = [    
-    cube([p_1,p_2,p_3,p_4]),
-    cube([p_2,p_1,p_4,p_3]),
-    cube([p_2,p_1,p_3])
+  Pos = [
+    cube([c_1,c_2,c_3]),
+    cube([c_2,c_1,c_3]),   %Not sure if nessesary but shows list of faces can be expressed in any order 
+    cube([c_3,c_2,c_1]),
+    cube([c_5,c_4]),
+    cube([c_4,c_5])
   ],
   %% negative examples
   Neg = [
-    cube([c_1,c_2,c_3]),
-    cube([c_2,c_1,c_3]),
-    cube([c_3,c_2,c_1]),
-    cube([c_5,c_4]),
-    cube([c_4,c_5]),
+    cube([p_1,p_2,p_3,p_4]),
+    cube([p_2,p_1,p_4,p_3]),
     cube([t_1,t_2,t_3]),
     cube([t_2,t_1,t_3]),
     cube([c_7,c_8,c_9]),
@@ -167,3 +135,4 @@ metarule([P,Q,R], [P,A], [[Q,A,B],[R,B]]).
     cube([z_2,z_1])
   ],
   learn(Pos,Neg).
+

@@ -1,3 +1,4 @@
+:- dynamic pushFront/3, reorder_list_6/1.
 :- use_module('METAGOL/metagol').
 
 %% metagol settings
@@ -12,9 +13,8 @@
 % body_pred(ang_to_other/3).
 % body_pred(allSidesNot/2).
 % body_pred(remove_odd_size/2).
-body_pred(prism/1).
-body_pred(reorder_list/2).
-body_pred(primary_side/2).
+body_pred(prism/2).
+body_pred(reorder_list_6/2).
 
 %% background knowledge
 poly(c_1).                poly(c_4).                   
@@ -93,53 +93,72 @@ sides(p_4, 4).
 sides(c_7, 4).      sides(z_1, 3).    
 sides(c_8, 4).      sides(z_2, 3).
 sides(c_9, 4).
+
+
 %Background
 
 %% True if all faces are at 90 degrees to each other
+%% This is not entirely a correct definition however it will be true for any possible images of a cube.
+
 ang_to_other([First, Second|[]], Deg):-
   angle_between(First, Second, Deg).
 ang_to_other([First, Second|Tail], Deg):-
   angle_between(First, Second, Deg),
   ang_to_other([First|Tail], Deg).
 
-clone(X,X).
-my_length([],0).
-my_length([_|L],N) :- my_length(L,N1), N is N1 + 1.
 
 %% True if all faces of a shape have the same number of edges.
-allSides([], _).
+
+% allSidesNot([], Num).
+% allSidesNot([H|T], Num):-
+%   \+ sides(H, Num),
+%   \+ allSides(T, Num).
+
+allSides([], Num).
 allSides([H|T], Num):-
   sides(H, Num),
   allSides(T, Num).
 
-%% Reorders a list with one face having different sides to the rest, brings different side to front
-reorder_list([H|T], Odds):-
-  my_length([H|T], L),
-  reorder_list_counted([H|T], L, Odds).
-  
-reorder_list_counted([Head|Tail], Count, Odds):-
-  Count \= 0,
-  CountDep is Count-1,
-  append(Tail, [Head], Rot),
-  ( sides(Head, D),
+% remove_odd_size([Head|Tail], D):-
+%   sides(Head, D),
+%   allSidesNot(Tail, D).
+
+reorder_list(Pent, Size, ListReOrder) :-
+  setof(H, sides(H, Size), [Top|_]),
+  delete(Pent, Top, List),
+  append([Top], List, ListReOrder).
+
+
+reorder_list_6(Pent, ListReOrder) :-
+  setof(H, sides(H, 6), [Top|_]),
+  delete(Pent, Top, List),
+  append([Top], List, ListReOrder).
+
+
+prism([NewH|NewT], D) :-
+  %reorder_list([H|T], D, [NewH|NewT]),
+  sides(NewH, D),
   D \= 4,
-  allSides(Tail, 4)
-  -> clone([Head|Tail], Odds)
-  ; reorder_list_counted(Rot, CountDep, Odds)
-  ).
+  ang_to_other([NewH|NewT], 90),
+  allSides(NewT, 4).
 
-prism([First|Other]) :-
-  ang_to_other([First|Other], 90),
-  allSides(Other, 4).
+same_angle([Head|[]], Deg).
+same_angle([Head|Tail], Deg):-
+  compare_angles(Head,Tail,Deg),
+  same_angle(Tail, Deg).
 
-primary_side([Face|_], Num):- sides(Face, Num).
+compare_angles(H, [], Deg).
+compare_angles(H, [S|T], Deg):-
+  angle_between(H, S, Deg),
+  compare_angles(S,T,Deg).
+
 
 
 %% metarules
 % metarule([P,Q], [P,A], [[Q,A,6]]).
 % metarule([P,Q,R], [P,A], [[Q,A],[R,A,6]]).
 % metarule([P,C1], [P,A,C1], []).
-metarule([P,Q,R,C1], [P,A], [[Q,A],[R,A,C1]]).
+metarule([P,Q], [P,B], [[Q,B,6]]).
 % metarule([P,Q,R,C1], [P,A], [[Q,A],[R,A,C1]]).
 metarule([P,Q,R], [P,A], [[Q,A,B],[R,B]]).
 
@@ -148,22 +167,29 @@ metarule([P,Q,R], [P,A], [[Q,A,B],[R,B]]).
 :-
   %% positive examples
   Pos = [    
-    cube([p_1,p_2,p_3,p_4]),
-    cube([p_2,p_1,p_4,p_3]),
+    % cube([p_1,p_2,p_3,p_4]),
+    % cube([p_2,p_1,p_4,p_3]),
     cube([p_2,p_1,p_3])
   ],
   %% negative examples
   Neg = [
-    cube([c_1,c_2,c_3]),
-    cube([c_2,c_1,c_3]),
-    cube([c_3,c_2,c_1]),
-    cube([c_5,c_4]),
-    cube([c_4,c_5]),
-    cube([t_1,t_2,t_3]),
-    cube([t_2,t_1,t_3]),
-    cube([c_7,c_8,c_9]),
-    cube([c_9,c_8,c_7]),
-    cube([z_1,z_2]),
-    cube([z_2,z_1])
+    cube([c_1,c_2,c_3])
+    % cube([c_2,c_1,c_3]),   %Not sure if nessesary but shows list of faces can be expressed in any order 
+    % cube([c_3,c_2,c_1]),
+    % cube([c_5,c_4]),
+    % cube([c_4,c_5]),
+    % cube([t_1,t_2,t_3]),
+    % cube([t_2,t_1,t_3]),
+    % cube([c_7,c_8,c_9]),
+    % cube([c_9,c_8,c_7]),
+    % cube([z_1,z_2]),
+    % cube([z_2,z_1])
   ],
   learn(Pos,Neg).
+
+
+%Target
+%   penagon/1.
+%   pentagon(List):-
+%     angle(List, 90),
+%     allSides(List, 4)

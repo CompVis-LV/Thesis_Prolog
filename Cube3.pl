@@ -8,6 +8,7 @@ body_pred(allSides/2).
 body_pred(angle_between/3).
 body_pred(angle_between_aux/3).
 body_pred(angle/2).
+body_pred(same_angle/2).
 
 %% poly - 	   Defines a face (polygon), of a 3D object.
 %        	   Grouped to define a 3D object as seen in an RGBD.
@@ -103,16 +104,25 @@ sides(c_9, 4).
 %% True if all faces are at 90 degrees to each other
 %% This is not entirely a correct definition however it will be true for any possible images of a cube.
 
-angle([First|[]], Deg).
-angle([First|Tail], Deg):-
-  angle_between_aux(First, Tail, Deg),
-  angle(Tail, Deg).
+same_angle([Head|[]], Deg).
+same_angle([Head|Tail], Deg):-
+  compare_angles(Head,Tail,Deg),
+  same_angle(Tail, Deg).
 
-angle_between_aux(First, [Second|Tail], Deg):-
-    angle_between(First, Second, Deg).
+compare_angles(H, [], Deg).
+compare_angles(H, [S|T], Deg):-
+  angle_between(H, S, Deg),
+  compare_angles(S,T,Deg).
+
+%%angle([First|[]], Deg).
+%% angle([First|Tail], Deg):-
+%%   angle_between_aux(First, Tail, Deg),
+%%   angle(Tail, Deg).
+
+%% angle_between_aux(First, [Second|_], Deg):-
+%%   angle_between(First, Second, Deg).
 
 %% True if all faces of a shape have the same number of edges.
-
 allSides([], Num).
 allSides([H|T], Num):-
   sides(H, Num),
@@ -125,9 +135,10 @@ allSides([H|T], Num):-
 %metarule([P,Q], [P,A], [[Q,A,_]]).
 %metarule([P,Q,R], [P,A], [[Q,A],[R,A,90]]).
 %metarule([P,Q,R], [P,A], [[Q,A],[R,A,_]]).
-%metarule([P,C1], [P,A,C1], []).
+metarule([P,C1], [P,A,C1], []).
 metarule([P,Q,C1], [P,A], [[Q,A,C1]]).
 metarule([P,Q,R,C1], [P,A], [[Q,A],[R,A,C1]]).
+metarule([P,Q,R,C1,C2], [P,A], [[Q,A,C2],[R,A,C1]]).
 
 
 %% learning task

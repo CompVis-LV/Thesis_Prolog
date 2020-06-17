@@ -1,4 +1,4 @@
-:- use_module('../METAGOL/metagol').
+:- use_module('../../METAGOL/metagol').
 
 %% metagol settings
 body_pred(mother/2).
